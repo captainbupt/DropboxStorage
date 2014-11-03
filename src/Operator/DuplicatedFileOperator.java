@@ -50,12 +50,12 @@ public class DuplicatedFileOperator {
 	 * insert a file in disk to dropbox storage
 	 * 
 	 * @param filePath
-	 *            the full path of target file
+	 *          the full path of target file
+	 * @param fileName
+	 * 			the file's name
 	 * @return true is success
 	 */
-	public boolean insertFile(String filePath) {
-		String[] tmp = filePath.split(File.separator);
-		String fileName = tmp[tmp.length - 1];
+	public boolean insertFile(String filePath, String fileName) {
 		String[] content = CompressManager.getInstance().compress(
 				FileOperation.readFile(filePath));
 		if (content == null || content.length == 0)
