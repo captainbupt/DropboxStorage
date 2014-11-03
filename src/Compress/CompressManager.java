@@ -1,7 +1,6 @@
 package Compress;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class CompressManager {
 	private static CompressManager mCompressManager;
@@ -16,15 +15,15 @@ public class CompressManager {
 		mCompressManager = new CompressManager();
 	}
 
-	public CompressManager getInstance() {
+	public static CompressManager getInstance() {
 		return mCompressManager;
 	}
 
-	public String compress(String content) {
-		return content;
+	public String[] compress(String content) {
+		return null;
 	}
 
-	public String discompress(String fileContent) {
-		return fileContent;
+	public String discompress(String[] fileContent) {
+		return null;
 	}
 }

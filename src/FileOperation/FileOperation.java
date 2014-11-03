@@ -142,10 +142,26 @@ public class FileOperation {
 	 * 
 	 * @param dirName
 	 *            the directory name
-	 * @return files' name in the directory, contains only file name, no directory name.
-	 */	
-	public static String[] getAllFile(String dirName){
+	 * @return files' name in the directory, contains only file name, no
+	 *         directory name.
+	 */
+	public static String[] getAllFile(String dirName) {
 		File file = new File(dirName);
 		return file.list();
+	}
+
+	/**
+	 * remove the target file
+	 * 
+	 * @param fileName
+	 *            the target file name
+	 * @return true if success
+	 */
+	public static boolean deleteFile(String fileName) {
+		File file = new File(fileName);
+		if (file.exists()) {
+			return file.delete();
+		}
+		return false;
 	}
 }
