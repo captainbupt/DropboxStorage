@@ -15,7 +15,7 @@ public class DuplicatedFileOperator {
 	public DuplicatedFileOperator() {
 		mFileMap = new HashMap<>();
 		String[] fileNames = FileOperation.getAllFile(FileConstant.DIR_FILE);
-		for (int i = 0; i < fileNames.length; i++) {
+		for (int i = 0; fileNames != null && i < fileNames.length; i++) {
 			String[] content = FileOperation.readFile(
 					FileConstant.DIR_FILE + File.separator + fileNames[i])
 					.split(FileConstant.CONTENT_SEPARATOR);
@@ -94,7 +94,7 @@ public class DuplicatedFileOperator {
 	/**
 	 * show all file in application
 	 * 
-	 * @return the array of files name
+	 * @return the array of files name; or null if it is empty
 	 */
 	public String[] getAllFile() {
 		String[] files = new String[mFileMap.size()];
