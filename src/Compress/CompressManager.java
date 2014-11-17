@@ -13,9 +13,8 @@ public class CompressManager {
 	private static CompressManager mCompressManager;
 	// checkSum, <hash, fileName>
 	//private HashMap<Integer, HashMap<String, String>> mBlockMap;
-	private HashMap<String,String> mBlockMap;
-	private HashMap<Integer,String> mBlockSeeker;
-	private HashMap<String,Integer> mCountSeeker;
+	private HashMap<String,String> mBlockMap;//<hash, value>
+	private HashMap<Integer,String> mBlockSeeker;//<index, >
 	private HashMap<Integer,String> mFragment;
 	private int BLOCKSIZE=2;
 	//private String[] inFiles;
