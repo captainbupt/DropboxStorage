@@ -9,12 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class FileOperation {
-
-	public interface OnLineReadListener {
-		public void onLineRead(String line);
-	}
 
 	/**
 	 * read file line by line.
@@ -24,16 +21,15 @@ public class FileOperation {
 	 * @param onLineReadListener
 	 *            the listener when each line is read
 	 */
-	public static void readFileByLines(String fileName,
-			OnLineReadListener onLineReadListener) {
+	public static String[] readFileByLines(String fileName) {
+		ArrayList<String> results = new ArrayList<>();
 		File file = new File(fileName);
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(file));
 			String tempString = null;
 			while ((tempString = reader.readLine()) != null) {
-				if (onLineReadListener != null)
-					onLineReadListener.onLineRead(tempString);
+				results.add(tempString);
 			}
 			reader.close();
 		} catch (IOException e) {
@@ -46,6 +42,7 @@ public class FileOperation {
 				}
 			}
 		}
+		return results.toArray(new String[results.size()]);
 	}
 
 	/**
