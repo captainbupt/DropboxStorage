@@ -85,9 +85,12 @@ public class DuplicatedFileOperator {
 	 * @return true is success
 	 */
 	public boolean deleteFile(String fileName) {
-		if (mFileMap.remove(fileName) != null)
+		String[] content = mFileMap.get(fileName);
+		if(content!=null){
+			CompressManager.getInstance().deleteChunk(content);
 			return FileOperation.deleteFile(FileConstant.DIR_FILE
 					+ File.separator + fileName);
+		}
 		return false;
 	}
 

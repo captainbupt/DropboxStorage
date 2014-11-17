@@ -26,4 +26,8 @@ public class CompressManager {
 	public String discompress(String[] fileContent) {
 		return null;
 	}
+	
+	public boolean deleteChunk(String[] fileContent){
+		return true;
+	}
 }
