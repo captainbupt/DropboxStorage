@@ -10,16 +10,15 @@ import FileOperation.FileOperation;
 public class DuplicatedFileOperator {
 
 	public static DuplicatedFileOperator mDuplicatedFileOperator;
-	public HashMap<String, String[]> mFileMap;
+	public HashMap<String, DuplicatedFile> mFileMap;
 
 	public DuplicatedFileOperator() {
 		mFileMap = new HashMap<>();
 		String[] fileNames = FileOperation.getAllFile(FileConstant.DIR_FILE);
 		for (int i = 0; fileNames != null && i < fileNames.length; i++) {
-			String[] content = FileOperation.readFile(
-					FileConstant.DIR_FILE + File.separator + fileNames[i])
-					.split(FileConstant.CONTENT_SEPARATOR);
-			mFileMap.put(fileNames[i], content);
+			DuplicatedFile duplicatedFile = new DuplicatedFile(fileNames[i], FileOperation.readFile(
+					FileConstant.DIR_FILE + File.separator + fileNames[i]));
+			mFileMap.put(fileNames[i], duplicatedFile);
 		}
 	}
 
@@ -40,7 +39,7 @@ public class DuplicatedFileOperator {
 	 * @return the content of file; null if file is not found
 	 */
 	public String loadFile(String fileName) {
-		String[] content = mFileMap.get(fileName);
+		String[] content = mFileMap.get(fileName).getContent();
 		if (content == null || content.length == 0)
 			return null;
 		return CompressManager.getInstance().discompress(content);
@@ -60,18 +59,13 @@ public class DuplicatedFileOperator {
 				FileOperation.readFile(filePath));
 		if (content == null || content.length == 0)
 			return false;
-		String fileContent = "";
-		for (int i = 0; i < content.length; i++) {
-			if (i == 0)
-				fileContent += content[i];
-			else
-				fileContent = fileContent + FileConstant.CONTENT_SEPARATOR
-						+ content[i];
-		}
+		long time = System.currentTimeMillis();
+		long size = new File(fileName).length();
+		DuplicatedFile duplicatedFile = new DuplicatedFile(fileName, size,content,time);
 		boolean result = FileOperation.createFile(FileConstant.DIR_FILE
-				+ File.separator + fileName, fileContent);
+				+ File.separator + fileName, duplicatedFile.getFileContent());
 		if (result) {
-			mFileMap.put(fileName, content);
+			mFileMap.put(fileName, duplicatedFile);
 			return true;
 		}
 		return false;
@@ -85,8 +79,9 @@ public class DuplicatedFileOperator {
 	 * @return true is success
 	 */
 	public boolean deleteFile(String fileName) {
-		String[] content = mFileMap.get(fileName);
+		String[] content = mFileMap.get(fileName).getContent();
 		if(content!=null){
+			mFileMap.remove(fileName);
 			CompressManager.getInstance().deleteChunk(fileName,content);
 			return FileOperation.deleteFile(FileConstant.DIR_FILE
 					+ File.separator + fileName);
@@ -99,9 +94,9 @@ public class DuplicatedFileOperator {
 	 * 
 	 * @return the array of files name; or null if it is empty
 	 */
-	public String[] getAllFile() {
-		String[] files = new String[mFileMap.size()];
-		return mFileMap.keySet().toArray(files);
+	public DuplicatedFile[] getAllFile() {
+		DuplicatedFile[] files = new DuplicatedFile[mFileMap.size()];
+		return mFileMap.values().toArray(files);
 	}
 
 }
