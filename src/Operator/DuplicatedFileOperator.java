@@ -56,7 +56,7 @@ public class DuplicatedFileOperator {
 	 * @return true is success
 	 */
 	public boolean insertFile(String filePath, String fileName) {
-		String[] content = CompressManager.getInstance().compress(
+		String[] content = CompressManager.getInstance().compress(fileName,
 				FileOperation.readFile(filePath));
 		if (content == null || content.length == 0)
 			return false;
@@ -87,7 +87,7 @@ public class DuplicatedFileOperator {
 	public boolean deleteFile(String fileName) {
 		String[] content = mFileMap.get(fileName);
 		if(content!=null){
-			CompressManager.getInstance().deleteChunk(content);
+			CompressManager.getInstance().deleteChunk(fileName,content);
 			return FileOperation.deleteFile(FileConstant.DIR_FILE
 					+ File.separator + fileName);
 		}
