@@ -10,15 +10,32 @@ import FileOperation.FileOperation;
 public class DuplicatedFileOperator {
 
 	public static void main(String[] args){
+		long beginTime = System.currentTimeMillis();
 		init();
-		//FileOperation.createFile("C:\\Users\\luyisi\\workspace\\compressMan\\test4.txt", "128973405612");
-		//DuplicatedFileOperator.getInstance().insertFile("C:\\Users\\luyisi\\workspace\\compressMan\\test1.txt", "test1.txt");
-		//DuplicatedFileOperator.getInstance().insertFile("C:\\Users\\luyisi\\workspace\\compressMan\\test2.txt", "test2.txt");
-		DuplicatedFileOperator.getInstance().insertFile("C:\\Users\\luyisi\\workspace\\compressMan\\test4.txt", "test4.txt");
-		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test1.txt"));
-		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test2.txt"));
-		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test3.txt"));
-		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test4.txt"));
+		long secondTime = System.currentTimeMillis();
+		System.out.println(secondTime-beginTime);
+		/*DuplicatedFileOperator.getInstance().insertFile("10M-01.txt", "10M-01.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-02.txt", "10M-02.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-03.txt", "10M-03.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-04.txt", "10M-04.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-05.txt", "10M-05.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-06.txt", "10M-06.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-07.txt", "10M-07.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-08.txt", "10M-08.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-09.txt", "10M-09.txt");
+		DuplicatedFileOperator.getInstance().insertFile("10M-10.txt", "10M-10.txt");
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-01.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-02.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-03.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-04.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-05.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-06.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-07.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-08.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("10M-09.txt"));*/
+		FileOperation.createFile("result.txt",DuplicatedFileOperator.getInstance().loadFile("10M-10.txt"));
+		long finalTime = System.currentTimeMillis();
+		System.out.println(finalTime-secondTime);
 	}
 	
 	

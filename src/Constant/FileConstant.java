@@ -2,9 +2,9 @@ package Constant;
 
 public class FileConstant {
 	// directories' name
-	public static final String DIR_FILE = "C:\\Users\\luyisi\\workspace\\compressMan\\files";
-	public static final String DIR_FRAGMENT = "C:\\Users\\luyisi\\workspace\\compressMan\\fragments";
-	public static final String DIR_BLOCK = "C:\\Users\\luyisi\\workspace\\compressMan\\blocks";
+	public static final String DIR_FILE = "files";
+	public static final String DIR_FRAGMENT = "fragments";
+	public static final String DIR_BLOCK = "blocks";
 	
 	// files name, should append number after each file name 
 	public static final String NAME_FILE = "file";
