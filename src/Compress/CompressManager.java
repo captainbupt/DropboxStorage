@@ -23,16 +23,42 @@ public class CompressManager {
 	private HashMap<Integer, String> mFragment;
 	private int BLOCKSIZE = 2;
 	// private String[] inFiles;
-	private String iFile;
-	private String[] cFile;
-	private String outFile;
+	//private String iFile;
+	//private String[] cFile;
+	//private String outFile;
 	private int blockCount = 0;
 	private int fragmentCount = 0;
 
 	public CompressManager() {
-		// inFile=s;
-		FileOperation.readFile("");
-
+		// inFile=s;		
+		String[] bFileNames = FileOperation.getAllFile(FileConstant.DIR_BLOCK);
+		String[] fFileNames = FileOperation.getAllFile(FileConstant.DIR_FRAGMENT);
+		mBlockMap = new HashMap<String, Block>();
+		mBlockSeeker = new HashMap<Integer, Block>();
+		mFragment = new HashMap<Integer, String>();
+		for(int i=0;i<bFileNames.length;i++){
+			if(blockCount<Integer.parseInt(bFileNames[i])){
+				blockCount=Integer.parseInt(bFileNames[i]);
+			}
+			String[] eBlock=FileOperation.readFileByLines(FileConstant.DIR_BLOCK+File.separator+bFileNames[i]);
+			Block rBlock=new Block(Integer.parseInt(bFileNames[i]),eBlock[0],eBlock[1]);
+			if (eBlock.length>2){
+				for(int j=2;j<eBlock.length;j++){
+					rBlock.addParent(eBlock[j]);
+				}
+			}
+			mBlockMap.put(Hash.MD5Cal(eBlock[0]), rBlock);
+			mBlockSeeker.put(Integer.parseInt(bFileNames[i]), rBlock);
+		}
+		for(int m=0;m<fFileNames.length;m++){
+			if(fragmentCount<Integer.parseInt(fFileNames[m])){
+				fragmentCount=Integer.parseInt(fFileNames[m]);
+			}
+			String eFrag=FileOperation.readFile(FileConstant.DIR_FRAGMENT+File.separator+fFileNames[m]);
+			mFragment.put(Integer.parseInt(fFileNames[m]), eFrag);
+		}
+		blockCount++;
+		fragmentCount++;
 	}
 
 
@@ -47,25 +73,33 @@ public class CompressManager {
 		char buf[] = new char[BLOCKSIZE];
 		int fileLen = (int) Math.ceil(content.length() / BLOCKSIZE);
 		String[] comFile = new String[fileLen];
+
 		for (int i = 0; i < content.length(); i += BLOCKSIZE) {
-			if (i + BLOCKSIZE > (content.length() - 1)) {
+			if (i + BLOCKSIZE-1 > (content.length() - 1)) {
 				// something to be defined here
 				content.getChars(i, content.length() - 1, buf, 0);
 				String temp = String.valueOf(buf);
+				System.out.println(temp);
 				mFragment.put(fragmentCount, temp);
 				comFile[i] = FLAG_FRAGMENT + fragmentCount;
+				FileOperation.createFile(FileConstant.DIR_FRAGMENT+File.separator+fragmentCount, temp);
+				//FileOperation.appendToFile(FileConstant.DIR_FRAGMENT+File.separator+fragmentCount, "\r\n"+fragmentCount);
 				fragmentCount++;
-				// break;
 			} else {
-				content.getChars(i, i + BLOCKSIZE - 1, buf, 0);
+				content.getChars(i, i + BLOCKSIZE, buf, 0);
 				String temp = String.valueOf(buf);
+				System.out.println("here"+temp);
 				String tempMd5 = Hash.MD5Cal(temp);
 				Block block = new Block(blockCount, temp, fileName);
 				mBlockMap.put(tempMd5, block);
 				mBlockSeeker.put(blockCount, block);
 				comFile[i] = FLAG_BLOCK + blockCount;
+				FileOperation.createFile(FileConstant.DIR_BLOCK+File.separator+blockCount, temp);
+				//FileOperation.appendToFile(FileConstant.DIR_BLOCK+File.separator+blockCount, "\r\n"+blockCount);
+				FileOperation.appendToFile(FileConstant.DIR_BLOCK+File.separator+blockCount, "\r\n"+fileName);
 				blockCount++;
 			}
+			
 		}
 		return comFile;
 	}
@@ -88,14 +122,15 @@ public class CompressManager {
 		// scan the input from the first character,stop when a block is detected
 		// return the sub string before the block and the block
 		for (int i = 0; i + start < end - BLOCKSIZE + 1; i++) {
-			content.getChars(start + i, start + i + BLOCKSIZE - 1, buf, 0);
+			content.getChars(start + i, start + i + BLOCKSIZE , buf, 0);
 			String temp = String.valueOf(buf);
 			String tempMd5 = Hash.MD5Cal(temp);
-			if (mBlockMap.containsKey(tempMd5)) {
+			Block block  = mBlockMap.get(tempMd5);
+			if (block!=null) {
 				hasBlock = true;
 				if (i != 0) {
-					content.getChars(start, start + i - 1, buf1, 0);
-					blocks[0] = String.valueOf(buf1);
+					//content.getChars(start, start + i, buf1, 0);
+					blocks[0] = content.substring(start, start + i);
 				} else {
 					blocks[0] = null;
 				}
@@ -105,8 +140,8 @@ public class CompressManager {
 		}
 		// if no block detected, regard the first window as a new block
 		if (hasBlock == false) {
-			content.getChars(start, start + BLOCKSIZE - 1, buf, 0);
-			blocks[0] = String.valueOf(buf);
+			//content.getChars(start, start + BLOCKSIZE - 1, buf, 0);
+			blocks[0] = content.substring(start, start+BLOCKSIZE);
 			blocks[1] = null;
 		}
 		return blocks;
@@ -116,13 +151,13 @@ public class CompressManager {
 	 * this is a detailed method to implement the compression
 	 * 
 	 * @param content
-	 *            : content of the file
+	 *            content of the file
 	 * @return the compressed version of the file
 	 */
 	private String[] compFile(String fileName, String content) {
 		char buf[] = new char[BLOCKSIZE];
 		int fileLen = (int) Math.ceil(content.length() / BLOCKSIZE);
-		String[] comFile = new String[2 * fileLen];
+		ArrayList<String> comFile = new ArrayList<String>();
 		String[] blocks = new String[2];
 		int count = 0;
 		int subcount = 0;
@@ -132,7 +167,8 @@ public class CompressManager {
 				content.getChars(count, content.length() - 1, buf, 0);
 				String temp = String.valueOf(buf);
 				mFragment.put(fragmentCount, temp);
-				comFile[subcount] = FLAG_FRAGMENT + fragmentCount;
+				comFile.add( FLAG_FRAGMENT + fragmentCount);
+				FileOperation.createFile(FileConstant.DIR_FRAGMENT+File.separator+fragmentCount, temp);
 				subcount++;
 				fragmentCount++;
 				count += temp.length();
@@ -150,15 +186,19 @@ public class CompressManager {
 				if (blocks[1] != null) {
 					if (blocks[0] != null) {
 						mFragment.put(fragmentCount, blocks[0]);
-						comFile[subcount] = FLAG_FRAGMENT + fragmentCount;
+						comFile.add( FLAG_FRAGMENT + fragmentCount);
+						FileOperation.createFile(FileConstant.DIR_FRAGMENT+File.separator+fragmentCount, blocks[0]);
 						fragmentCount++;
-						comFile[subcount + 1] = FLAG_BLOCK
-								+ mBlockMap.get(blocks[1]).getIndex();
+						comFile.add( FLAG_BLOCK
+								+ mBlockMap.get(Hash.MD5Cal(blocks[1])).getIndex());
+						mBlockMap.get(Hash.MD5Cal(blocks[1])).addParent(fileName);
+						FileOperation.appendToFile(FileConstant.DIR_BLOCK+File.separator+fragmentCount, "\r\n"+fileName);
 						subcount += 2;
 						count += blocks[0].length() + BLOCKSIZE;
 					} else {
-						comFile[subcount] = FLAG_BLOCK
-								+ mBlockMap.get(blocks[1]).getIndex();
+						comFile.add( FLAG_BLOCK
+								+ mBlockMap.get(Hash.MD5Cal(blocks[1])).getIndex());
+						FileOperation.appendToFile(FileConstant.DIR_BLOCK+File.separator+fragmentCount, "\r\n"+fileName);
 						subcount += 1;
 						count += BLOCKSIZE;
 					}
@@ -167,14 +207,16 @@ public class CompressManager {
 					Block block = new Block(blockCount, blocks[0], fileName);
 					mBlockMap.put(tempMd5, block);
 					mBlockSeeker.put(blockCount, block);
-					comFile[subcount] = FLAG_BLOCK + blockCount;
+					FileOperation.createFile(FileConstant.DIR_BLOCK+File.separator+blockCount, blocks[0]+"\r\n"+fileName);
+					//FileOperation.appendToFile(FileConstant.DIR_BLOCK+File.separator+blockCount, "\r\n"+blockCount);
+					comFile.add( FLAG_BLOCK + blockCount);
 					subcount += 1;
 					blockCount++;
 					count += BLOCKSIZE;
 				}
 			}
 		}
-		return comFile;
+		return comFile.toArray(new String[comFile.size()]);
 	}
 
 	/**
@@ -195,7 +237,8 @@ public class CompressManager {
 	 * @return an array of string regarding the map and key of each segment
 	 */
 	public String[] compress(String fileName, String content) {
-		iFile = content;
+		String iFile = content;
+		String[] cFile;
 		if (mBlockMap == null) {
 			cFile = initBlocks(fileName, iFile);
 		} else {
@@ -208,26 +251,38 @@ public class CompressManager {
 	 * this method is to uncompress the input to a data stream
 	 * 
 	 * @param fileContent
-	 *            : the array of strings that stores the map and key of each
+	 *            the array of strings that stores the map and key of each
 	 *            chunk of the file
 	 * @return a data stream, supposed to be identical to the original input
 	 */
 	public String discompress(String[] fileContent) {
-		for (int i = 0; i < fileContent.length - 1; i++) {
-			String[] theBlock = fileContent[i].split(",");
-			if (theBlock.length != 2
-					|| (theBlock[0] != "f" && theBlock[0] != "b")) {
-				System.out.println("error in the file");
-				return null;
+		String outFile = "";
+		for (int i = 0; i < fileContent.length ; i++) {
+			String[] theBlock = new String[2];
+			theBlock[0] = fileContent[i].charAt(0)+"";
+			theBlock[1] = fileContent[i].substring(1);
+			int index = Integer.parseInt(theBlock[1]);
+			if (theBlock[0].equals("f")) {
+				outFile += mFragment.get(index);
 			} else {
-				int index = Integer.parseInt(theBlock[1]);
-				if (theBlock[0] == "f") {
-					outFile += mFragment.get(index);
-				} else {
-					outFile += mBlockSeeker.get(index);
-				}
+				outFile += mBlockSeeker.get(index).getContent();
 			}
 		}
+//		for (int i = 0; i < fileContent.length - 1; i++) {
+//			String[] theBlock = fileContent[i].split(",");
+//			if (theBlock.length != 2
+//					|| (theBlock[0] != "f" && theBlock[0] != "b")) {
+//				System.out.println("error in the file");
+//				return null;
+//			} else {
+//				int index = Integer.parseInt(theBlock[1]);
+//				if (theBlock[0] == "f") {
+//					outFile += mFragment.get(index);
+//				} else {
+//					outFile += mBlockSeeker.get(index);
+//				}
+//			}
+//		}
 		return outFile;
 	}
 
@@ -260,4 +315,6 @@ public class CompressManager {
 		}
 		return true;
 	}
+	
+
 }

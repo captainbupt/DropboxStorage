@@ -9,6 +9,19 @@ import FileOperation.FileOperation;
 
 public class DuplicatedFileOperator {
 
+	public static void main(String[] args){
+		init();
+		//FileOperation.createFile("C:\\Users\\luyisi\\workspace\\compressMan\\test4.txt", "128973405612");
+		//DuplicatedFileOperator.getInstance().insertFile("C:\\Users\\luyisi\\workspace\\compressMan\\test1.txt", "test1.txt");
+		//DuplicatedFileOperator.getInstance().insertFile("C:\\Users\\luyisi\\workspace\\compressMan\\test2.txt", "test2.txt");
+		DuplicatedFileOperator.getInstance().insertFile("C:\\Users\\luyisi\\workspace\\compressMan\\test4.txt", "test4.txt");
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test1.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test2.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test3.txt"));
+		System.out.println(DuplicatedFileOperator.getInstance().loadFile("test4.txt"));
+	}
+	
+	
 	public static DuplicatedFileOperator mDuplicatedFileOperator;
 	public HashMap<String, DuplicatedFile> mFileMap;
 

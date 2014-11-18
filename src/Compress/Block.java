@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 public class Block {
 	public Block(int mIndex, String mContent, String mParent) {
-		super();
+		//super();
 		this.mIndex = mIndex;
 		this.mContent = mContent;
 		this.mParent = new HashSet<>();

@@ -13,15 +13,16 @@ public class DuplicatedFile {
 		this.mFileName = fileName;
 		String[] tmp = fileContent.split(FileConstant.CONTENT_SEPARATOR);
 		int length = tmp.length;
-		mContent = new String[length-2];
-		for(int i=0;i<length-2;i++){
+		mContent = new String[length - 2];
+		for (int i = 0; i < length - 2; i++) {
 			mContent[i] = tmp[i];
 		}
-		mTime = Long.parseLong(tmp[length-2]);
-		mSize = Long.parseLong(tmp[length-1]);
+		mTime = Long.parseLong(tmp[length - 2]);
+		mSize = Long.parseLong(tmp[length - 1]);
 	}
-	
-	public DuplicatedFile(String fileName, long mSize, String[] mContent, long mTime) {
+
+	public DuplicatedFile(String fileName, long mSize, String[] mContent,
+			long mTime) {
 		super();
 		this.mFileName = fileName;
 		this.mSize = mSize;
@@ -36,7 +37,7 @@ public class DuplicatedFile {
 	public void setFileName(String fileName) {
 		this.mFileName = fileName;
 	}
-	
+
 	public long getSize() {
 		return mSize;
 	}
@@ -57,11 +58,11 @@ public class DuplicatedFile {
 		return mTime;
 	}
 
-	public String getTimeString(){
+	public String getTimeString() {
 		Date date = new Date(mTime);
 		return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
 	}
-	
+
 	public void setTime(long time) {
 		this.mTime = time;
 	}
@@ -69,17 +70,14 @@ public class DuplicatedFile {
 	public String getFileContent() {
 		String fileContent = "";
 		for (int i = 0; i < mContent.length; i++) {
-			if (i == 0)
-				fileContent += mContent[i];
-			else
-				fileContent = fileContent + FileConstant.CONTENT_SEPARATOR
-						+ mContent[i];
+			fileContent = fileContent + mContent[i]
+					+ FileConstant.CONTENT_SEPARATOR;
 		}
-		fileContent = fileContent + FileConstant.CONTENT_SEPARATOR + mTime;
-		fileContent = fileContent + FileConstant.CONTENT_SEPARATOR + mSize;
+		fileContent = fileContent + mTime + FileConstant.CONTENT_SEPARATOR;
+		fileContent = fileContent + mSize;
 		return fileContent;
 	}
-	
+
 	private String mFileName;
 	private long mSize;
 	private String[] mContent;
