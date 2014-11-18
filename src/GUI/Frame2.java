@@ -151,7 +151,7 @@ public class Frame2 {
 		btnUpload = new JButton("Upload");
 		btnUpload.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		panel_6.add(btnUpload);
-		btnUpload.setIcon(new ImageIcon("C:\\Users\\ywei\\Documents\\Study\\EC504\\DropboxStorage\\Imagesource\\upload.png"));
+		btnUpload.setIcon(new ImageIcon("Imagesource\\upload.png"));
 		// when click, a file choose window pop up and can select file from
 		// 	system to upload
 		//	the file name will add to the list to show on the list panel
@@ -166,7 +166,7 @@ public class Frame2 {
 		btnDownload = new JButton("Download");
 		btnDownload.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		panel_6.add(btnDownload);
-		btnDownload.setIcon(new ImageIcon("C:\\Users\\ywei\\Documents\\Study\\EC504\\DropboxStorage\\Imagesource\\download.png"));
+		btnDownload.setIcon(new ImageIcon("Imagesour\\download.png"));
 		btnDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				downloadfile();
@@ -177,7 +177,7 @@ public class Frame2 {
 		btnDelete = new JButton("Delete");
 		btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		panel_6.add(btnDelete);
-		btnDelete.setIcon(new ImageIcon("C:\\Users\\ywei\\Documents\\Study\\EC504\\DropboxStorage\\Imagesource\\delete.png"));
+		btnDelete.setIcon(new ImageIcon("Imagesource\\delete.png"));
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				deletefile();
