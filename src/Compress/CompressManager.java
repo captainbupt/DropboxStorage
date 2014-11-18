@@ -359,7 +359,7 @@ public class CompressManager {
 			theBlock[0] = fileContent[i].charAt(0) + "";
 			theBlock[1] = fileContent[i].substring(1);
 			int index = Integer.parseInt(theBlock[1]);
-			if (theBlock[0] == "f") {
+			if (theBlock[0].equals(FLAG_BLOCK)) {
 				Block temp = mBlockSeeker.get(index);
 				temp.delParent(fileName);
 				if (temp.getParentSize() == 0) {

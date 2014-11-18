@@ -2,6 +2,8 @@ package Operator;
 
 import java.sql.Date;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 import Constant.FileConstant;
@@ -38,6 +40,15 @@ public class DuplicatedFile {
 		this.mFileName = fileName;
 	}
 
+	public String getSizeString(){
+		NumberFormat formatter = new DecimalFormat("###,###");
+		if(mSize<1024){
+			return formatter.format(mSize)+" Bytes";
+		}else{
+			return formatter.format(mSize/1024)+" KB";
+		}
+	}
+	
 	public long getSize() {
 		return mSize;
 	}
