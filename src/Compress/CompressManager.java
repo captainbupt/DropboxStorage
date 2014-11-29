@@ -35,12 +35,12 @@ public class CompressManager {
 					.readFileByLines(FileConstant.DIR_BLOCK + File.separator
 							+ bFileNames[i]);
 			Block rBlock = new Block(Integer.parseInt(bFileNames[i]),
-					eBlock[0], eBlock[1]);
-			if (eBlock.length > 2) {
-				for (int j = 2; j < eBlock.length; j++) {
-					rBlock.addParent(eBlock[j]);
-				}
-			}
+					eBlock[0], Integer.parseInt(eBlock[1]));
+//			if (eBlock.length > 2) {
+//				for (int j = 2; j < eBlock.length; j++) {
+//					rBlock.addParent(eBlock[j]);
+//				}
+//			}
 			mBlockMap.put(Hash.MD5Cal(eBlock[0]), rBlock);
 			mBlockSeeker.put(Integer.parseInt(bFileNames[i]), rBlock);
 		}
@@ -83,9 +83,9 @@ public class CompressManager {
 						if (slideStart - lastEnd == BLOCKSIZE) {
 							String blockContent = content.substring(lastEnd,
 									slideStart);
-							Block block = new Block(blockCount, blockContent, fileName);
+							Block block = new Block(blockCount, blockContent, 1);
 							mBlockMap.put(Hash.MD5Cal(blockContent), new Block(
-									blockCount, blockContent, fileName));
+									blockCount, blockContent, 1));
 							mBlockSeeker.put(blockCount, block);
 							comFile.add(FLAG_BLOCK + blockCount);
 							FileOperation.createFile(FileConstant.DIR_BLOCK
@@ -106,15 +106,15 @@ public class CompressManager {
 					FileOperation.appendToFile(FileConstant.DIR_BLOCK
 							+ File.separator + tempBlock.getIndex(), "\r\n"
 							+ fileName);
-					tempBlock.addParent(fileName);
+					tempBlock.addParentCount();
 					slideStart += BLOCKSIZE;
 					lastEnd = slideStart;
 				} else if (slideStart - lastEnd == BLOCKSIZE) {
 					String blockContent = content
 							.substring(lastEnd, slideStart);
-					Block block = new Block(blockCount, blockContent, fileName);
+					Block block = new Block(blockCount, blockContent,1);
 					mBlockMap.put(Hash.MD5Cal(blockContent), new Block(
-							blockCount, blockContent, fileName));
+							blockCount, blockContent, 1));
 					mBlockSeeker.put(blockCount, block);
 					comFile.add(FLAG_BLOCK + blockCount);
 					FileOperation.createFile(FileConstant.DIR_BLOCK
@@ -132,7 +132,7 @@ public class CompressManager {
 			// String temp = String.valueOf(buf);
 			if (slideStart - lastEnd == BLOCKSIZE) {
 				String blockContent = content.substring(lastEnd);
-				Block block = new Block(blockCount, blockContent, fileName);
+				Block block = new Block(blockCount, blockContent, 1);
 				mBlockMap.put(Hash.MD5Cal(blockContent), block);
 				mBlockSeeker.put(blockCount, block);
 				comFile.add(FLAG_BLOCK + blockCount);
@@ -233,8 +233,8 @@ public class CompressManager {
 			int index = Integer.parseInt(theBlock[1]);
 			if (theBlock[0].equals(FLAG_BLOCK)) {
 				Block temp = mBlockSeeker.get(index);
-				temp.delParent(fileName);
-				if (temp.getParentSize() == 0) {
+				temp.subParentCount();
+				if (temp.getParentCount() == 0) {
 					FileOperation.deleteFile(FileConstant.DIR_BLOCK
 							+ File.separator + index);
 					mBlockMap.remove(Hash.MD5Cal(temp.getContent()));
