@@ -14,7 +14,7 @@ public class CompressManager {
 	private HashMap<String, Block> mBlockMap;
 	private HashMap<Integer, Block> mBlockSeeker;
 	private HashMap<Integer, String> mFragment;
-	private int BLOCKSIZE = 7000;
+	private int BLOCKSIZE = 3;
 	private int blockCount = 0;
 	private int fragmentCount = 0;
 
@@ -36,11 +36,11 @@ public class CompressManager {
 							+ bFileNames[i]);
 			Block rBlock = new Block(Integer.parseInt(bFileNames[i]),
 					eBlock[0], Integer.parseInt(eBlock[1]));
-//			if (eBlock.length > 2) {
-//				for (int j = 2; j < eBlock.length; j++) {
-//					rBlock.addParent(eBlock[j]);
-//				}
-//			}
+			// if (eBlock.length > 2) {
+			// for (int j = 2; j < eBlock.length; j++) {
+			// rBlock.addParent(eBlock[j]);
+			// }
+			// }
 			mBlockMap.put(Hash.MD5Cal(eBlock[0]), rBlock);
 			mBlockSeeker.put(Integer.parseInt(bFileNames[i]), rBlock);
 		}
@@ -112,7 +112,7 @@ public class CompressManager {
 				} else if (slideStart - lastEnd == BLOCKSIZE) {
 					String blockContent = content
 							.substring(lastEnd, slideStart);
-					Block block = new Block(blockCount, blockContent,1);
+					Block block = new Block(blockCount, blockContent, 1);
 					mBlockMap.put(Hash.MD5Cal(blockContent), new Block(
 							blockCount, blockContent, 1));
 					mBlockSeeker.put(blockCount, block);
@@ -130,7 +130,7 @@ public class CompressManager {
 		}
 		if (lastEnd != slideStart) {
 			// String temp = String.valueOf(buf);
-			if (slideStart - lastEnd == BLOCKSIZE) {
+			if (lastEnd <= content.length() - BLOCKSIZE) {
 				String blockContent = content.substring(lastEnd);
 				Block block = new Block(blockCount, blockContent, 1);
 				mBlockMap.put(Hash.MD5Cal(blockContent), block);
@@ -140,7 +140,9 @@ public class CompressManager {
 						+ File.separator + blockCount, blockContent + "\r\n"
 						+ fileName);
 				blockCount++;
-			} else if (lastEnd < slideStart) {
+				lastEnd += BLOCKSIZE;
+			}
+			if (lastEnd < content.length()) {
 				String fragment = content.substring(lastEnd);
 				comFile.add(FLAG_FRAGMENT + fragmentCount);
 				mFragment.put(fragmentCount, fragment);

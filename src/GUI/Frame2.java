@@ -98,12 +98,6 @@ public class Frame2 {
 ///////////////////////////////////////////////////////////////////////////////////////		
 		msgframe = new JFrame();
 		listModel = new DefaultListModel<String>();
-		listModel.addElement("test1.txt");
-		listModel.addElement("test2.txt");
-		listModel.addElement("test3.txt");
-		listModel.addElement("test4.txt");
-		listModel.addElement("test5.txt");
-		listModel.addElement("test6.txt");
 		
 		DuplicatedFile filelist_temp[] = DuplicatedFileOperator.getInstance().getAllFile();
 		if (filelist_temp != null) {
@@ -254,11 +248,12 @@ public class Frame2 {
 			String filename = file.getName();
 			//System.out.println(filepath);
 			if (DuplicatedFileOperator.getInstance().insertFile(filepath,filename)) {
-				DuplicatedFile filelist_temp[] = DuplicatedFileOperator.getInstance()
+				/*DuplicatedFile filelist_temp[] = DuplicatedFileOperator.getInstance()
 						.getAllFile();
 				for (int i = 0; i < filelist_temp.length; i++) {
 					listModel.addElement(filelist_temp[i].getFileName());
-				}
+				}*/
+				listModel.addElement(filename);
 			}
 			else{
 				JOptionPane.showMessageDialog(msgframe, "Insert Fail!");
