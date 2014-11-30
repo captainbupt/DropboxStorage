@@ -108,9 +108,8 @@ public class DuplicatedFileOperator {
 	 * 
 	 * @return the array of files name; or null if it is empty
 	 */
-	public DuplicatedFile[] getAllFile() {
-		DuplicatedFile[] files = new DuplicatedFile[mFileMap.size()];
-		return mFileMap.values().toArray(files);
+	public ArrayList<DuplicatedFile> getAllFile() {
+		return new ArrayList<DuplicatedFile>(mFileMap.values());
 	}
 
 }
