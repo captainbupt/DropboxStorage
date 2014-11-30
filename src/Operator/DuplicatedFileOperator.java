@@ -8,7 +8,7 @@ import Constant.FileConstant;
 import FileOperation.FileOperation;
 
 public class DuplicatedFileOperator {
-	
+
 	public static DuplicatedFileOperator mDuplicatedFileOperator;
 	public HashMap<String, DuplicatedFile> mFileMap;
 
@@ -16,13 +16,23 @@ public class DuplicatedFileOperator {
 		mFileMap = new HashMap<>();
 		String[] fileNames = FileOperation.getAllFile(FileConstant.DIR_FILE);
 		for (int i = 0; fileNames != null && i < fileNames.length; i++) {
-			DuplicatedFile duplicatedFile = new DuplicatedFile(fileNames[i], FileOperation.readFile(
-					FileConstant.DIR_FILE + File.separator + fileNames[i]));
+			DuplicatedFile duplicatedFile = new DuplicatedFile(fileNames[i],
+					FileOperation.readFile(FileConstant.DIR_FILE
+							+ File.separator + fileNames[i]));
 			mFileMap.put(fileNames[i], duplicatedFile);
 		}
 	}
 
 	public static void init() {
+		File file = new File(FileConstant.DIR_FILE);
+		if (!file.isDirectory())
+			file.mkdirs();
+		file = new File(FileConstant.DIR_BLOCK);
+		if (!file.isDirectory())
+			file.mkdirs();
+		file = new File(FileConstant.DIR_FRAGMENT);
+		if (!file.isDirectory())
+			file.mkdirs();
 		mDuplicatedFileOperator = new DuplicatedFileOperator();
 		CompressManager.init();
 	}
@@ -49,9 +59,9 @@ public class DuplicatedFileOperator {
 	 * insert a file in disk to dropbox storage
 	 * 
 	 * @param filePath
-	 *          the full path of target file
+	 *            the full path of target file
 	 * @param fileName
-	 * 			the file's name
+	 *            the file's name
 	 * @return true is success
 	 */
 	public boolean insertFile(String filePath, String fileName) {
@@ -61,7 +71,8 @@ public class DuplicatedFileOperator {
 			return false;
 		long time = System.currentTimeMillis();
 		long size = new File(fileName).length();
-		DuplicatedFile duplicatedFile = new DuplicatedFile(fileName, size,content,time);
+		DuplicatedFile duplicatedFile = new DuplicatedFile(fileName, size,
+				content, time);
 		boolean result = FileOperation.createFile(FileConstant.DIR_FILE
 				+ File.separator + fileName, duplicatedFile.getFileContent());
 		if (result) {
@@ -80,9 +91,9 @@ public class DuplicatedFileOperator {
 	 */
 	public boolean deleteFile(String fileName) {
 		String[] content = mFileMap.get(fileName).getContent();
-		if(content!=null){
+		if (content != null) {
 			mFileMap.remove(fileName);
-			CompressManager.getInstance().deleteChunk(fileName,content);
+			CompressManager.getInstance().deleteChunk(fileName, content);
 			return FileOperation.deleteFile(FileConstant.DIR_FILE
 					+ File.separator + fileName);
 		}

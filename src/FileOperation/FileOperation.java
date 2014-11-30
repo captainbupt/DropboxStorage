@@ -3,12 +3,14 @@ package FileOperation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 public class FileOperation {
@@ -160,5 +162,28 @@ public class FileOperation {
 			return file.delete();
 		}
 		return false;
+	}
+
+	public static void overwriteFile(String fileName, String content, int offset) {
+		RandomAccessFile ra = null;
+		try {
+			ra = new RandomAccessFile(fileName, "rw");
+			ra.seek(offset);
+			ra.writeBytes(content);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (ra != null)
+				try {
+					ra.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
 	}
 }

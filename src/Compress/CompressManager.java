@@ -36,11 +36,7 @@ public class CompressManager {
 							+ bFileNames[i]);
 			Block rBlock = new Block(Integer.parseInt(bFileNames[i]),
 					eBlock[0], Integer.parseInt(eBlock[1]));
-			// if (eBlock.length > 2) {
-			// for (int j = 2; j < eBlock.length; j++) {
-			// rBlock.addParent(eBlock[j]);
-			// }
-			// }
+
 			mBlockMap.put(Hash.MD5Cal(eBlock[0]), rBlock);
 			mBlockSeeker.put(Integer.parseInt(bFileNames[i]), rBlock);
 		}
@@ -81,46 +77,23 @@ public class CompressManager {
 				if (tempBlock != null) {
 					if (lastEnd < slideStart) {
 						if (slideStart - lastEnd == BLOCKSIZE) {
-							String blockContent = content.substring(lastEnd,
-									slideStart);
-							Block block = new Block(blockCount, blockContent, 1);
-							mBlockMap.put(Hash.MD5Cal(blockContent), new Block(
-									blockCount, blockContent, 1));
-							mBlockSeeker.put(blockCount, block);
 							comFile.add(FLAG_BLOCK + blockCount);
-							FileOperation.createFile(FileConstant.DIR_BLOCK
-									+ File.separator + blockCount, blockContent
-									+ "\r\n" + fileName);
-							blockCount++;
+							addBlock(content.substring(lastEnd, slideStart));
 						} else if (lastEnd < slideStart) {
-							String fragment = content.substring(lastEnd,
-									slideStart);
 							comFile.add(FLAG_FRAGMENT + fragmentCount);
-							mFragment.put(fragmentCount, fragment);
-							FileOperation.createFile(FileConstant.DIR_FRAGMENT
-									+ File.separator + fragmentCount, fragment);
-							fragmentCount++;
+							addFragment(content.substring(lastEnd, slideStart));
 						}
 					}
 					comFile.add(FLAG_BLOCK + tempBlock.getIndex());
-					FileOperation.appendToFile(FileConstant.DIR_BLOCK
-							+ File.separator + tempBlock.getIndex(), "\r\n"
-							+ fileName);
 					tempBlock.addParentCount();
+					FileOperation.overwriteFile(FileConstant.DIR_BLOCK
+							+ File.separator + tempBlock.getIndex(),
+							tempBlock.getParentCount() + "", BLOCKSIZE + 2);
 					slideStart += BLOCKSIZE;
 					lastEnd = slideStart;
 				} else if (slideStart - lastEnd == BLOCKSIZE) {
-					String blockContent = content
-							.substring(lastEnd, slideStart);
-					Block block = new Block(blockCount, blockContent, 1);
-					mBlockMap.put(Hash.MD5Cal(blockContent), new Block(
-							blockCount, blockContent, 1));
-					mBlockSeeker.put(blockCount, block);
 					comFile.add(FLAG_BLOCK + blockCount);
-					FileOperation.createFile(FileConstant.DIR_BLOCK
-							+ File.separator + blockCount, blockContent
-							+ "\r\n" + fileName);
-					blockCount++;
+					addBlock(content.substring(lastEnd, slideStart));
 					lastEnd = slideStart;
 				} else {
 					slideStart++;
@@ -131,27 +104,32 @@ public class CompressManager {
 		if (lastEnd != slideStart) {
 			// String temp = String.valueOf(buf);
 			if (lastEnd <= content.length() - BLOCKSIZE) {
-				String blockContent = content.substring(lastEnd);
-				Block block = new Block(blockCount, blockContent, 1);
-				mBlockMap.put(Hash.MD5Cal(blockContent), block);
-				mBlockSeeker.put(blockCount, block);
 				comFile.add(FLAG_BLOCK + blockCount);
-				FileOperation.createFile(FileConstant.DIR_BLOCK
-						+ File.separator + blockCount, blockContent + "\r\n"
-						+ fileName);
-				blockCount++;
+				addBlock(content.substring(lastEnd));
 				lastEnd += BLOCKSIZE;
 			}
 			if (lastEnd < content.length()) {
-				String fragment = content.substring(lastEnd);
 				comFile.add(FLAG_FRAGMENT + fragmentCount);
-				mFragment.put(fragmentCount, fragment);
-				FileOperation.createFile(FileConstant.DIR_FRAGMENT
-						+ File.separator + fragmentCount, fragment);
-				fragmentCount++;
+				addFragment(content.substring(lastEnd));
 			}
 		}
 		return comFile.toArray(new String[comFile.size()]);
+	}
+
+	private void addBlock(String content) {
+		Block block = new Block(blockCount, content, 1);
+		mBlockMap.put(Hash.MD5Cal(content), block);
+		mBlockSeeker.put(blockCount, block);
+		FileOperation.createFile(FileConstant.DIR_BLOCK + File.separator
+				+ blockCount, content + "\r\n" + 1);
+		blockCount++;
+	}
+
+	public void addFragment(String content) {
+		mFragment.put(fragmentCount, content);
+		FileOperation.createFile(FileConstant.DIR_FRAGMENT + File.separator
+				+ fragmentCount, content);
+		fragmentCount++;
 	}
 
 	/**
@@ -199,21 +177,6 @@ public class CompressManager {
 				outFile += mBlockSeeker.get(index).getContent();
 			}
 		}
-		// for (int i = 0; i < fileContent.length - 1; i++) {
-		// String[] theBlock = fileContent[i].split(",");
-		// if (theBlock.length != 2
-		// || (theBlock[0] != "f" && theBlock[0] != "b")) {
-		// System.out.println("error in the file");
-		// return null;
-		// } else {
-		// int index = Integer.parseInt(theBlock[1]);
-		// if (theBlock[0] == "f") {
-		// outFile += mFragment.get(index);
-		// } else {
-		// outFile += mBlockSeeker.get(index);
-		// }
-		// }
-		// }
 		return outFile;
 	}
 
@@ -228,7 +191,7 @@ public class CompressManager {
 	 * @return true if success.
 	 */
 	public boolean deleteChunk(String fileName, String[] fileContent) {
-		for (int i = 0; i < fileContent.length - 1; i++) {
+		for (int i = 0; i < fileContent.length; i++) {
 			String[] theBlock = new String[2];
 			theBlock[0] = fileContent[i].charAt(0) + "";
 			theBlock[1] = fileContent[i].substring(1);
@@ -241,6 +204,10 @@ public class CompressManager {
 							+ File.separator + index);
 					mBlockMap.remove(Hash.MD5Cal(temp.getContent()));
 					mBlockSeeker.remove(temp.getIndex());
+				} else {
+					FileOperation.overwriteFile(FileConstant.DIR_BLOCK
+							+ File.separator + index, temp.getParentCount()
+							+ "", BLOCKSIZE + 2);
 				}
 			} else {
 				mFragment.remove(index);
