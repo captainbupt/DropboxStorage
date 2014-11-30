@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import Constant.FileConstant;
 
@@ -15,16 +16,16 @@ public class DuplicatedFile {
 		this.mFileName = fileName;
 		String[] tmp = fileContent.split(FileConstant.CONTENT_SEPARATOR);
 		int length = tmp.length;
-		mContent = new String[length - 2];
-		for (int i = 0; i < length - 2; i++) {
-			mContent[i] = tmp[i];
+		mContent = new ArrayList<>(length-2);
+		for (int i = 0; i < length-2; i++) {
+			mContent.add(tmp[i]);
 		}
 		mTime = Long.parseLong(tmp[length - 2]);
 		mSize = Long.parseLong(tmp[length - 1]);
 	}
 
-	public DuplicatedFile(String fileName, long mSize, String[] mContent,
-			long mTime) {
+	public DuplicatedFile(String fileName, long mSize,
+			ArrayList<String> mContent, long mTime) {
 		super();
 		this.mFileName = fileName;
 		this.mSize = mSize;
@@ -40,15 +41,15 @@ public class DuplicatedFile {
 		this.mFileName = fileName;
 	}
 
-	public String getSizeString(){
+	public String getSizeString() {
 		NumberFormat formatter = new DecimalFormat("###,###");
-		if(mSize<1024){
-			return formatter.format(mSize)+" Bytes";
-		}else{
-			return formatter.format(mSize/1024)+" KB";
+		if (mSize < 1024) {
+			return formatter.format(mSize) + " Bytes";
+		} else {
+			return formatter.format(mSize / 1024) + " KB";
 		}
 	}
-	
+
 	public long getSize() {
 		return mSize;
 	}
@@ -57,11 +58,11 @@ public class DuplicatedFile {
 		this.mSize = size;
 	}
 
-	public String[] getContent() {
+	public ArrayList<String> getContent() {
 		return mContent;
 	}
 
-	public void setContent(String[] content) {
+	public void setContent(ArrayList<String> content) {
 		this.mContent = content;
 	}
 
@@ -80,8 +81,8 @@ public class DuplicatedFile {
 
 	public String getFileContent() {
 		String fileContent = "";
-		for (int i = 0; i < mContent.length; i++) {
-			fileContent = fileContent + mContent[i]
+		for (String tmp: mContent) {
+			fileContent = fileContent + tmp
 					+ FileConstant.CONTENT_SEPARATOR;
 		}
 		fileContent = fileContent + mTime + FileConstant.CONTENT_SEPARATOR;
@@ -91,7 +92,7 @@ public class DuplicatedFile {
 
 	private String mFileName;
 	private long mSize;
-	private String[] mContent;
+	private ArrayList<String> mContent;
 	private long mTime;
 
 }
