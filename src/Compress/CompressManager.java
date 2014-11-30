@@ -14,7 +14,7 @@ public class CompressManager {
 	private HashMap<String, Block> mBlockMap;
 	private HashMap<Integer, Block> mBlockSeeker;
 	private HashMap<Integer, String> mFragment;
-	private int BLOCKSIZE = 1024;
+	private int BLOCKSIZE = 7000;
 	private int blockCount = 0;
 	private int fragmentCount = 0;
 
@@ -57,95 +57,6 @@ public class CompressManager {
 	}
 
 	/**
-	 * initiate the blockmap when reading the first file
-	 * 
-	 * @param content
-	 *            : the input data stream, content of the original file return
-	 *            the compressed version of the very first file
-	 */
-	private String[] initBlocks(String fileName, String content) {
-		char buf[] = new char[BLOCKSIZE];
-		int fileLen = (int) Math.ceil(content.length() / BLOCKSIZE);
-		String[] comFile = new String[fileLen];
-
-		for (int i = 0; i < content.length(); i += BLOCKSIZE) {
-			if (i + BLOCKSIZE - 1 > (content.length() - 1)) {
-				// something to be defined here
-				content.getChars(i, content.length() - 1, buf, 0);
-				String temp = String.valueOf(buf);
-				System.out.println(temp);
-				mFragment.put(fragmentCount, temp);
-				comFile[i] = FLAG_FRAGMENT + fragmentCount;
-				FileOperation.createFile(FileConstant.DIR_FRAGMENT
-						+ File.separator + fragmentCount, temp);
-				// FileOperation.appendToFile(FileConstant.DIR_FRAGMENT+File.separator+fragmentCount,
-				// "\r\n"+fragmentCount);
-				fragmentCount++;
-			} else {
-				content.getChars(i, i + BLOCKSIZE, buf, 0);
-				String temp = String.valueOf(buf);
-				System.out.println("here" + temp);
-				String tempMd5 = Hash.MD5Cal(temp);
-				Block block = new Block(blockCount, temp, fileName);
-				mBlockMap.put(tempMd5, block);
-				mBlockSeeker.put(blockCount, block);
-				comFile[i] = FLAG_BLOCK + blockCount;
-				FileOperation.createFile(FileConstant.DIR_BLOCK
-						+ File.separator + blockCount, temp);
-				// FileOperation.appendToFile(FileConstant.DIR_BLOCK+File.separator+blockCount,
-				// "\r\n"+blockCount);
-				FileOperation.appendToFile(FileConstant.DIR_BLOCK
-						+ File.separator + blockCount, "\r\n" + fileName);
-				blockCount++;
-			}
-
-		}
-		return comFile;
-	}
-
-	/**
-	 * 
-	 * @param content
-	 *            : input data stream, content of the file to be compressed
-	 * @param start
-	 *            : start point of the block scanning
-	 * @param end
-	 *            : end point of the block scanning
-	 * @return the either detected or new block
-	 */
-	private String[] slideBlock(String content, int start, int end) {
-		char buf[] = new char[BLOCKSIZE];
-		String blocks[] = new String[2];
-		boolean hasBlock = false;
-		// scan the input from the first character,stop when a block is detected
-		// return the sub string before the block and the block
-		for (int i = 0; i + start < end - BLOCKSIZE + 1; i++) {
-			content.getChars(start + i, start + i + BLOCKSIZE, buf, 0);
-			String temp = String.valueOf(buf);
-			String tempMd5 = Hash.MD5Cal(temp);
-			Block block = mBlockMap.get(tempMd5);
-			if (block != null) {
-				hasBlock = true;
-				if (i != 0) {
-					// content.getChars(start, start + i, buf1, 0);
-					blocks[0] = content.substring(start, start + i);
-				} else {
-					blocks[0] = null;
-				}
-				blocks[1] = temp;
-				break;
-			}
-		}
-		// if no block detected, regard the first window as a new block
-		if (hasBlock == false) {
-			// content.getChars(start, start + BLOCKSIZE - 1, buf, 0);
-			blocks[0] = content.substring(start, start + BLOCKSIZE);
-			blocks[1] = null;
-		}
-		return blocks;
-	}
-
-	/**
 	 * this is a detailed method to implement the compression
 	 * 
 	 * @param content
@@ -153,9 +64,7 @@ public class CompressManager {
 	 * @return the compressed version of the file
 	 */
 	private String[] compFile(String fileName, String content) {
-		char buf[] = new char[BLOCKSIZE];
 		ArrayList<String> comFile = new ArrayList<String>();
-		String[] blocks = new String[2];
 		int slideStart = 0;
 		int lastEnd = 0;
 		// scan through the whole file character by character to detect blocks
@@ -165,39 +74,6 @@ public class CompressManager {
 			if (slideStart + BLOCKSIZE > content.length()) { //
 				slideStart = content.length();
 			} else { // determine the window of block scanning
-				/*
-				 * if (count + 2 * BLOCKSIZE - 1 < content.length()) { blocks =
-				 * slideBlock(content, count, count + 2 * BLOCKSIZE - 1); } else
-				 * { blocks = slideBlock(content, count, content.length() - 1);
-				 * } // save the substring as a fragment and add the block
-				 * address to // the compressed file if (blocks[1] != null) { if
-				 * (blocks[0] != null) { mFragment.put(fragmentCount,
-				 * blocks[0]); comFile.add( FLAG_FRAGMENT + fragmentCount);
-				 * FileOperation
-				 * .createFile(FileConstant.DIR_FRAGMENT+File.separator
-				 * +fragmentCount, blocks[0]); fragmentCount++; comFile.add(
-				 * FLAG_BLOCK +
-				 * mBlockMap.get(Hash.MD5Cal(blocks[1])).getIndex());
-				 * mBlockMap.get(Hash.MD5Cal(blocks[1])).addParent(fileName);
-				 * FileOperation
-				 * .appendToFile(FileConstant.DIR_BLOCK+File.separator
-				 * +fragmentCount, "\r\n"+fileName); count += blocks[0].length()
-				 * + BLOCKSIZE; } else { comFile.add( FLAG_BLOCK +
-				 * mBlockMap.get(Hash.MD5Cal(blocks[1])).getIndex());
-				 * FileOperation
-				 * .appendToFile(FileConstant.DIR_BLOCK+File.separator
-				 * +blockCount, "\r\n"+fileName); count += BLOCKSIZE; } } else {
-				 * String tempMd5 = Hash.MD5Cal(blocks[0]); Block block = new
-				 * Block(blockCount, blocks[0], fileName);
-				 * mBlockMap.put(tempMd5, block); mBlockSeeker.put(blockCount,
-				 * block);
-				 * FileOperation.createFile(FileConstant.DIR_BLOCK+File.separator
-				 * +blockCount, blocks[0]+"\r\n"+fileName);
-				 * //FileOperation.appendToFile
-				 * (FileConstant.DIR_BLOCK+File.separator+blockCount,
-				 * "\r\n"+blockCount); comFile.add( FLAG_BLOCK + blockCount);
-				 * blockCount++; count += BLOCKSIZE; }
-				 */
 				String temp = content.substring(slideStart, slideStart
 						+ BLOCKSIZE);
 				String tempMD5 = Hash.MD5Cal(temp);
@@ -296,11 +172,7 @@ public class CompressManager {
 	public String[] compress(String fileName, String content) {
 		String iFile = content;
 		String[] cFile;
-		if (mBlockMap == null) {
-			cFile = initBlocks(fileName, iFile);
-		} else {
-			cFile = compFile(fileName, iFile);
-		}
+		cFile = compFile(fileName, iFile);
 		return cFile;
 	}
 
