@@ -63,16 +63,16 @@ public class DuplicatedFileOperator {
 	 *            the full path of target file
 	 * @param fileName
 	 *            the file's name
-	 * @return true is success
+	 * @return duplicatedFile is success; null if fail
 	 */
-	public boolean insertFile(String filePath, String fileName) {
+	public DuplicatedFile insertFile(String filePath, String fileName) {
 		long currentTime = System.currentTimeMillis();
 		ArrayList<String> content = CompressManager.getInstance().compress(fileName,
 				FileOperation.readFile(filePath));
 		if (content == null || content.size() == 0)
-			return false;
+			return null;
 		long time = System.currentTimeMillis();
-		long size = new File(fileName).length();
+		long size = new File(filePath).length();
 		DuplicatedFile duplicatedFile = new DuplicatedFile(fileName, size,
 				content, time);
 		boolean result = FileOperation.createFile(FileConstant.DIR_FILE
@@ -80,9 +80,9 @@ public class DuplicatedFileOperator {
 		System.out.println("time:"+(System.currentTimeMillis()-currentTime));
 		if (result) {
 			mFileMap.put(fileName, duplicatedFile);
-			return true;
+			return duplicatedFile;
 		}
-		return false;
+		return null;
 	}
 
 	/**
