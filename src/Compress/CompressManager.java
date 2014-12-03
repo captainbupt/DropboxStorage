@@ -53,12 +53,31 @@ public class CompressManager {
 	}
 
 	/**
+	 * This method is to called when first compress. This is could be fast since no compare is needed
+	 * 
+	 * @param content
+	 * @return an array of string regarding the map and key of each segment
+	 */
+	private ArrayList<String> firstConpress(String fileName, String content){
+		ArrayList<String> comFile = new ArrayList<String>();
+		int i;
+		for(i=0;i<content.length()-BLOCKSIZE;i+=BLOCKSIZE){
+			addBlock(content.substring(i, i+BLOCKSIZE), comFile);
+		}
+		addFragment(content.substring(i), comFile);
+		return comFile;
+	}
+	
+	
+	/**
 	 * This method is to compress the input data stream
 	 * 
 	 * @param content
 	 * @return an array of string regarding the map and key of each segment
 	 */
 	public ArrayList<String> compress(String fileName, String content) {
+		if(mBlockMap.size()==0)
+			return firstConpress(fileName, content);
 		ArrayList<String> comFile = new ArrayList<String>();
 		int slideStart = 0;
 		int lastEnd = 0;
