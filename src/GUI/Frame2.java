@@ -350,10 +350,6 @@ public class Frame2 {
 			fc.setCurrentDirectory(new File(Path));
 		int response = fc.showSaveDialog(null);
 		if (response == JFileChooser.APPROVE_OPTION) {
-			JDialog dialog = new JDialog();
-			dialog.setSize(100, 100);
-			dialog.setTitle("loading...");
-			dialog.show();
 			File file = fc.getSelectedFile();
 			String filepath = file.getAbsolutePath();
 			String filename = file.getName();
@@ -372,7 +368,6 @@ public class Frame2 {
 			} else {
 				JOptionPane.showMessageDialog(msgframe, "Insert Fail!");
 			}
-			dialog.dispose();
 		}
 		buttonavaliable();
 	}
