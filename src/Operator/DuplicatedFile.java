@@ -6,10 +6,27 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import Constant.FileConstant;
 
-public class DuplicatedFile {
+public class DuplicatedFile extends Vector<String>{
+
+	@Override
+	public synchronized String elementAt(int index) {
+		// TODO Auto-generated method stub
+		switch (index) {
+		case 0:
+			return mFileName;
+		case 1:
+			return getSizeString();
+		case 2:
+			return getTimeString();
+		default:
+			break;
+		}
+		return super.elementAt(index);
+	}
 
 	public DuplicatedFile(String fileName, String fileContent) {
 		super();
