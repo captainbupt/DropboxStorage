@@ -36,7 +36,7 @@ import FileOperation.FileOperation;
 import Operator.DuplicatedFile;
 import Operator.DuplicatedFileOperator;
 
-public class Frame2 {
+public class Frame {
 
 	private JFrame frmDropboxStorage;
 	DefaultListModel<String> listModel;
@@ -53,7 +53,7 @@ public class Frame2 {
 	 */
 	public static void main(String[] args) {
 		try {
-			Frame2 window = new Frame2();
+			Frame window = new Frame();
 			window.frmDropboxStorage
 					.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			window.frmDropboxStorage.setVisible(true);
@@ -66,7 +66,7 @@ public class Frame2 {
 	/**
 	 * Create the application.
 	 */
-	public Frame2() {
+	public Frame() {
 		initialize();
 	}
 
