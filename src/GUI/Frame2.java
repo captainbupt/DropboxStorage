@@ -384,12 +384,11 @@ public class Frame2 {
 				File file = fc.getSelectedFile();
 				String filepath = file.getAbsolutePath();
 				// String filename = file.getName();
-				String df = DuplicatedFileOperator.getInstance().loadFile(
-						(String) table.getValueAt(table.getSelectedRow(), 0));
-				if (df != null) {
+				if(DuplicatedFileOperator.getInstance().loadFile(
+						(String) table.getValueAt(table.getSelectedRow(), 0), filepath)) {
 
 					// Path = file.getParent();
-					FileOperation.createFile(filepath, df);
+					//FileOperation.createFile(filepath, df);
 					JOptionPane.showMessageDialog(
 							msgframe,
 							"Download success!\n"

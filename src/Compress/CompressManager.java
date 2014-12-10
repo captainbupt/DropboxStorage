@@ -1,6 +1,8 @@
 package Compress;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -167,17 +169,34 @@ public class CompressManager {
 	 *            of the file
 	 * @return a data stream, supposed to be identical to the original input
 	 */
-	public String discompress(ArrayList<String> fileContent) {
-		String outFile = "";
-		for (String tmp : fileContent) {
-			int index = Integer.parseInt(tmp.substring(1));
-			if (tmp.charAt(0) == FLAG_FRAGMENT) {
-				outFile += mFragment.get(index);
-			} else {
-				outFile += mBlockSeeker.get(index).getContent();
-			}
+	public boolean discompress( ArrayList<String> fileContent, String dstFilePath) {
+		File dstFile = new File(dstFilePath);
+		if(dstFile.exists()){
+			dstFile.delete();
 		}
-		return outFile;
+		try {
+			dstFile.createNewFile();
+			FileWriter writer = new FileWriter(dstFile, true);
+			String outFile = "";
+			for (String tmp : fileContent) {
+				int index = Integer.parseInt(tmp.substring(1));
+				if (tmp.charAt(0) == FLAG_FRAGMENT) {
+					//outFile += mFragment.get(index);
+					writer.write(outFile += mFragment.get(index));
+				} else {
+					//outFile += mBlockSeeker.get(index).getContent();
+					writer.write(mBlockSeeker.get(index).getContent());
+				}
+			}
+			writer.close();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		//FileOperation.createFile(dstFilePath, outFile);
+		return true;
 	}
 
 	/***

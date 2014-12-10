@@ -49,11 +49,11 @@ public class DuplicatedFileOperator {
 	 *            the file name
 	 * @return the content of file; null if file is not found
 	 */
-	public String loadFile(String fileName) {
+	public boolean loadFile(String fileName, String dstFile) {
 		ArrayList<String> content = mFileMap.get(fileName).getContent();
 		if (content == null || content.size() == 0)
-			return null;
-		return CompressManager.getInstance().discompress(content);
+			return false;
+		return CompressManager.getInstance().discompress(content, dstFile);
 	}
 
 	/**
